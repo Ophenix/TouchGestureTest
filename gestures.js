@@ -16,8 +16,8 @@ window.addEventListener('load', function() {
     var displayTempertureElement = document.getElementById("degreeValue")
     var appDegreeElement = document.getElementById("degreeValue");
     var gestureX=0, gestureY=0,
-        lastGestureX=0, lastGestureY= 0, gestureStart= 0, gestureInitialObject;
-
+        lastGestureX=0, lastGestureY= 0, gestureStart= 0;
+    var dragLength=0, dragDirection, initialGestureY,initTouch = false;
 
     var appBody = document.getElementById('appBody');
     var touchOptions = {
@@ -32,33 +32,68 @@ window.addEventListener('load', function() {
         transform_min_scale: 0
     };
     var hammertime = Hammer(appBody, touchOptions).on("tap swipe transform touch drag dragend", function(event) {
+        event.gesture.preventDefault();
+        dragLength=0;
         manageMultitouch(event);
 
 
     });
 
     function manageMultitouch(event){
-        if (event.eventType == "EVENT_START") {
-            beginGesture(event);
-        };
-        switch(event.type){
+        console.log(event.type);
+        beginGesture(event);
 
+
+        switch(event.type){
 
             case "drag":
 
-                if (event.eventType == "MOVE"){
-                // check if direction changed
+                if (initTouch==false)
+                {
+                    initialGestureY= event.gesture.deltaY;
+                    initTouch=true;
+                    console.log("initial");
+                }
 
-            }
+
+
+                dragLength = initialGestureY-event.gesture.deltaY;
+
+                // check if direction changed
+                // add screen type (tablet/phone/large screen) check and variations
+
+                    if (dragLength>(pageSize/10))
+                    {
+
+                        initialGestureY= event.gesture.deltaY;
+                        changeDisplayedValue(-1);
+                        //dragLength=0;
+                        console.log(dragLength);
+                    }
+                    if (dragLength<-(pageSize/10))
+                    {
+                        initialGestureY= event.gesture.deltaY;
+                        changeDisplayedValue(1);
+                        //dragLength=0;
+                        console.log(dragLength);
+                    }
+
+
+                break;
+
+            case "dragend":
+                initTouch = false;
+
                 break;
 
             case "tap":
-                
                 if (event.gesture.center.pageY<pageMidPoint){
                     changeDisplayedValue(1);
+
                 }
                 if (event.gesture.center.pageY>pageMidPoint){
                     changeDisplayedValue(-1);
+
                 }
 
 
@@ -67,11 +102,10 @@ window.addEventListener('load', function() {
     }
     // this function records the gesture's starting point and time for more calculations. It saves individual values (for drag direction changes it saves the start gestures as an object).
     function beginGesture (event) {
-        event.startEvent=gestureInitialObject;
-        event.timeStamp = gestureStart;
-        event.center.pageX = lastGestureX;
-        event.center.pageY = lastGestureY;
-        event.timeStamp = gestureStart;
+        // event.gesture.startEvent=gestureInitialObject;
+        event.gesture.timeStamp = gestureStart;
+        event.gesture.center.clientX = lastGestureX;
+        event.gesture.center.clientY = lastGestureY;
 
     };
 
