@@ -61,18 +61,18 @@ window.addEventListener('load', function() {
                 // check if direction changed
                 // add screen type (tablet/phone/large screen) check and variations
 
-                    if (dragLength>(pageSize/10))
+                    if (dragLength>(pageSize/6))
                     {
 
                         initialGestureY= event.gesture.deltaY;
-                        changeDisplayedValue(-1);
+                        changeDisplayedValue(1);
                         //dragLength=0;
                         console.log(dragLength);
                     }
-                    if (dragLength<-(pageSize/10))
+                    if (dragLength<-(pageSize/6))
                     {
                         initialGestureY= event.gesture.deltaY;
-                        changeDisplayedValue(1);
+                        changeDisplayedValue(-1);
                         //dragLength=0;
                         console.log(dragLength);
                     }
@@ -107,7 +107,7 @@ window.addEventListener('load', function() {
                 }
                 transformCurrentGestureLength= Math.abs(event.touches[0].deltaY-event.touches[1].deltaY)+Math.abs(event.touches[0].deltaX-event.touches[1].deltaX);
                 // checks if the distance was sufficient to proc a degree change.
-                if (Math.abs(transformGestureLength-transformCurrentGestureLength)>(pageSize/10))
+                if (Math.abs(transformGestureLength-transformCurrentGestureLength)>(pageSize/6))
                 {
                     // checks fo decrease
                     if(transformGestureLength-transformCurrentGestureLength > 0)
