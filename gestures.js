@@ -17,7 +17,7 @@ window.addEventListener('load', function() {
     var appDegreeElement = document.getElementById("degreeValue");
     var gestureX=0, gestureY=0,
         lastGestureX=0, lastGestureY= 0, gestureStart= 0;
-    var dragLength=0, dragDirection, initialGestureY,initTouch = false;
+    var dragLength=0, dragDirection, initialGestureY,transformGestureLength,transformCurrentGestureLength, initialGestureX,initTouch = false;
 
     var appBody = document.getElementById('appBody');
     var touchOptions = {
@@ -30,6 +30,7 @@ window.addEventListener('load', function() {
         drag_min_distance: 0,
         transform_min_rotation: 0,
         transform_min_scale: 0
+        // add max number of gestures
     };
     var hammertime = Hammer(appBody, touchOptions).on("tap swipe transform touch drag dragend", function(event) {
         event.gesture.preventDefault();
@@ -52,10 +53,8 @@ window.addEventListener('load', function() {
                 {
                     initialGestureY= event.gesture.deltaY;
                     initTouch=true;
-                    console.log("initial");
+                    console.log("initiate"+" "+event.type);
                 }
-
-
 
                 dragLength = initialGestureY-event.gesture.deltaY;
 
@@ -95,6 +94,40 @@ window.addEventListener('load', function() {
                     changeDisplayedValue(-1);
 
                 }
+                break;
+
+            case "transform":
+                if (initTouch==false)
+                {
+                    initialGestureY= Math.abs(event.touches[0].deltaY-event.touches[1].deltaY);
+                    initialGestureX= Math.abs(event.touches[0].deltaX-event.touches[1].deltaX);
+                    transformGestureLength=initialGestureX+initialGestureY;
+                    initTouch=true;
+                    console.log("initiate"+" "+event.type);
+                }
+                transformCurrentGestureLength= Math.abs(event.touches[0].deltaY-event.touches[1].deltaY)+Math.abs(event.touches[0].deltaX-event.touches[1].deltaX);
+                // checks if the distance was sufficient to proc a degree change.
+                if (Math.abs(transformGestureLength-transformCurrentGestureLength)>(pageSize/10))
+                {
+                    // checks fo decrease
+                    if(transformGestureLength-transformCurrentGestureLength > 0)
+                    {
+                        changeDisplayedValue(-1);
+
+                    }
+                    // checks for increase
+                    if(transformGestureLength-transformCurrentGestureLength < 0)
+                    {
+                        changeDisplayedValue(1);
+
+                    }
+
+                    initialGestureY= Math.abs(event.touches[0].deltaY-event.touches[1].deltaY);
+                    initialGestureX= Math.abs(event.touches[0].deltaX-event.touches[1].deltaX);
+
+                }
+
+                break;
 
 
 
